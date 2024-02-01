@@ -1,4 +1,4 @@
-module github.com/nullptr-z/go-live/gin-template
+module github.com/nullptr-z/gin-template
 
 go 1.21.6
 
