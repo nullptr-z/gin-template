@@ -1,0 +1,25 @@
+app:
+  name: app_name
+  mode: dev
+  host: 0.0.0.0
+  port: 8899
+postgres:
+  host: 127.0.0.1
+  port: 5433
+  user: postgres
+  password:
+  db_name: app_db
+  max_open_connect: 5
+  max_idle_connect: 10
+redis:
+  addr: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 30
+log:
+  level: debug
+  filename: app_log.log
+  max_size: 200
+  max_age: 30
+  max_backups: 7
