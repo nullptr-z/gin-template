@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nullptr-z/go-live/gin-template/router"
-	"github.com/nullptr-z/go-live/gin-template/settings"
+	"github.com/nullptr-z/gin-template/router"
+	"github.com/nullptr-z/gin-template/settings"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
