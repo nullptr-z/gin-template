@@ -11,10 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var (
-	// Pdb *gorm.DB
-	db *sqlx.DB
-)
+var db *sqlx.DB
 
 func InitSqlDB() error {
 	var config DbConfig
@@ -37,6 +34,10 @@ func InitSqlDB() error {
 	db.SetMaxIdleConns(config.MaxIdleConnect)
 	fmt.Println("Postgres initialized.......")
 	return nil
+}
+
+func GetDB() *sqlx.DB {
+	return db
 }
 
 func CloseDB() {

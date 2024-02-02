@@ -1,8 +1,12 @@
 package settings
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -33,23 +37,41 @@ func InitLogger() error {
 	return nil
 }
 
-// func main() {
-// 	writesyncer := &zapcore.WriteSyncer{}
+// 自定义日志输出格式
+func LoggerFormateOutput(g *gin.Context) {
+	// 请求前
+	startTime := time.Now()
 
-// 	level := new(zapcore.Level)
-// 	if err := level.UnmarshalText([]byte(viper.GetString("log.level"))); err != nil {
-// 		return
-// 	}
-// 	core := zapcore.NewCore(nil, writesyncer, level)
+	// 复制请求体，以便日志记录后仍可读取
+	var requestBody bytes.Buffer
+	if g.Request.Body != nil {
+		bodyBytes, _ := ioutil.ReadAll(g.Request.Body)
+		requestBody.Write(bodyBytes)
+		// 重新设置请求体，以供后续使用
+		g.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	}
+	fmt.Println("request arguments:", requestBody.String())
+	queryParams := g.Request.URL.Query()
+	fmt.Println("query arguments:", queryParams)
 
-// 	log := zap.New(core, zap.AddCaller())
-// 	// 替换全局的 Logger
-// 	zap.ReplaceGlobals(log)
+	// 处理请求
+	g.Next()
 
-// 	// level: debug
-// 	// filename: app_log.log
-// 	// max_size: 200
-// 	// max_age: 30
-// 	// max_backups: 7
+	// 请求后
+	endTime := time.Now()
+	latencyTime := endTime.Sub(startTime)
+	statusCode := g.Writer.Status()
+	clientIP := g.ClientIP()
 
-// }
+	// 使用方括号[]格式化日志内容
+	zap.L().Info("request details",
+		zap.String("method", g.Request.Method),
+		zap.String("uri", g.Request.RequestURI),
+		zap.Int("status", statusCode),
+		zap.String("latency", fmt.Sprintf("[%s]", latencyTime)),
+		zap.String("clientIP", fmt.Sprintf("[%s]", clientIP)),
+		zap.String("request arguments", fmt.Sprintf("[%s]", requestBody.String())),
+		zap.String("queryParams", fmt.Sprintf("[%s]", queryParams)),
+		// zap.String("formData", fmt.Sprintf("[%s]", formData)),
+	)
+}
